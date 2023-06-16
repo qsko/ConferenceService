@@ -11,11 +11,16 @@ public class User {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "id")
     private int userID;
     @Column(unique=true)
     private String login;
     private String email;
-    @OneToMany
+    @ManyToMany
+    @JoinTable(
+            name = "CONFERENCE_USERS_LECTURES",
+            joinColumns = @JoinColumn(name = "USERID"),
+            inverseJoinColumns = @JoinColumn(name = "LECTURE_ID"))
     private List<Lecture> lectures;
 
     public User() {
@@ -59,6 +64,9 @@ public class User {
         this.lectures = lectures;
     }
 
+    public void addLecture(Lecture lecture){
+        this.lectures.add(lecture);
+    }
     @Override
     public String toString() {
         return "User{" +
