@@ -1,10 +1,12 @@
 package com.example.conferencesimulation.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Lecture {
@@ -16,6 +18,7 @@ public class Lecture {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     @ManyToMany
+    @JsonIgnoreProperties("lectures")
     @JoinTable(
             name = "CONFERENCE_USERS_LECTURES",
             joinColumns = @JoinColumn(name = "LECTURE_ID"),
@@ -74,5 +77,27 @@ public class Lecture {
                 ", endDate=" + endDate +
                 ", users=" + users +
                 '}';
+    }
+
+    public String formatForMail(){
+        return "Lecture{" +
+                "lectureId=" + lectureId +
+                ", path=" + path +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lecture lecture = (Lecture) o;
+        return lectureId == lecture.lectureId && path == lecture.path && startDate.equals(lecture.startDate) && endDate.equals(lecture.endDate) && Objects.equals(users, lecture.users);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lectureId);
     }
 }

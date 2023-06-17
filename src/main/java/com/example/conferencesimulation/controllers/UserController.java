@@ -1,5 +1,6 @@
 package com.example.conferencesimulation.controllers;
 
+import com.example.conferencesimulation.dto.LectureDto;
 import com.example.conferencesimulation.dto.UserDto;
 import com.example.conferencesimulation.exceptions.LoginConflictException;
 import com.example.conferencesimulation.model.Lecture;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.conferencesimulation.services.UserServiceImpl;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,7 +35,17 @@ public class UserController {
     }
 
     @GetMapping(value = "/{login}/reservations")
-    public List<Lecture> getUserReservation(@PathVariable String login) {
+    public List<LectureDto> getUserReservation(@PathVariable String login) {
         return userService.getUserLectures(login);
+    }
+
+    @PostMapping(value = "/{login}/{email}/{lectureId}")
+    public User signupForLecture(@PathVariable String login, @PathVariable String email, @PathVariable int lectureId) throws IOException {
+        return userService.signupForLecture(login,email,lectureId);
+    }
+
+    @DeleteMapping(value = "/{login}/lecture/{lectureId}")
+    public User cancelRegistrationForLecture(@PathVariable String login, @PathVariable int lectureId){
+        return userService.cancelRegistrationForLecture(login,lectureId);
     }
 }

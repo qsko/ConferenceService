@@ -1,5 +1,6 @@
 package com.example.conferencesimulation.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 
@@ -17,6 +18,7 @@ public class User {
     private String login;
     private String email;
     @ManyToMany
+    @JsonIgnoreProperties("users")
     @JoinTable(
             name = "CONFERENCE_USERS_LECTURES",
             joinColumns = @JoinColumn(name = "USERID"),
@@ -67,6 +69,9 @@ public class User {
     public void addLecture(Lecture lecture){
         this.lectures.add(lecture);
     }
+
+    public void deleteLecture(Lecture lecture) { this.lectures.remove(lecture); }
+
     @Override
     public String toString() {
         return "User{" +

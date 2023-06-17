@@ -1,7 +1,9 @@
 package com.example.conferencesimulation.services;
+import com.example.conferencesimulation.dto.LectureDto;
 import com.example.conferencesimulation.dto.UserDto;
 import com.example.conferencesimulation.exceptions.LoginConflictException;
 import com.example.conferencesimulation.exceptions.SignupForLectureException;
+import com.example.conferencesimulation.mappers.LectureMapper;
 import com.example.conferencesimulation.mappers.UserMapper;
 import com.example.conferencesimulation.model.Lecture;
 import com.example.conferencesimulation.model.User;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.example.conferencesimulation.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +30,8 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private LectureMapper lectureMapper;
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -35,13 +40,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<Lecture> getUserLectures(String login) {
+    public List<LectureDto> getUserLectures(String login) {
         User user = userRepository.findUserByLogin(login).orElseThrow();
-        return user.getLectures();
+        return user.getLectures().stream().map(lecture -> lectureMapper.reservationToReservationDto(lecture)).toList();
     }
 
     @Override
-    public User signupForLecture(String login, String email, int lectureId) {
+    public User cancelRegistrationForLecture(String login, int lectureId) {
+
+        User user = userRepository.findUserByLogin(login).orElseThrow();
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        user.deleteLecture(lecture);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User signupForLecture(String login, String email, int lectureId) throws IOException {
 
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         List<User> users = lecture.getUsers();
@@ -58,9 +72,8 @@ public class UserServiceImpl implements UserService{
 
         user.addLecture(lecture);
         emailService.sendMail(user.getEmail(), "Succesfuly registered for lecture: " +
-                lecture.toString());
+                lecture.formatForMail());
         return userRepository.save(user);
-
     }
 
     @Override
