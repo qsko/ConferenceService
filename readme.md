@@ -16,11 +16,14 @@ Lectures are stored in database (can checked them in resources file in data.sql 
 for example ID=12 means lecture is being held in first period, and its second path
 
 examples:
-[POST] http://localhost:8080/users/login/email
-[PUT] localhost:8080/users/login/newEmail
-[GET] localhost:8080/users
-[POST] localhost:8080/reservations/login/newEmail/11
-[GET] localhost:8080/users/login/reservations
+[POST] http://localhost:8080/users/login/email <br />
+[PUT] localhost:8080/users/login/newEmail <br />
+[GET] localhost:8080/users <br />
+[POST] localhost:8080/reservations/login/newEmail/11 <br />
+[GET] localhost:8080/users/login/reservations <br />
 
-create user with login and email, chang user's email, list all user, make reservation for user,
+Means create user with login and email, chang user's email, list all user, make reservation for user,
 list reservation for user.
+
+Run project by navigating to root directory and run <br />
+mvn spring-boot:run (alternatively you can run project in IDE by finding main class)
