@@ -34,6 +34,13 @@ public class User {
         this.email = email;
     }
 
+    public User(int userID, String login, String email, List<Lecture> lectures) {
+        this.userID = userID;
+        this.login = login;
+        this.email = email;
+        this.lectures = lectures;
+    }
+
     public int getUserID() {
         return userID;
     }

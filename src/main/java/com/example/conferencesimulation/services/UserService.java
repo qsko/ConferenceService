@@ -12,8 +12,6 @@ import java.util.List;
 public interface UserService {
     List<UserDto> getAllUsers();
     List<LectureDto> getUserLectures(String login);
-    User cancelRegistrationForLecture(String login, int lectureId);
-    User signupForLecture(String login, String email, int lectureId) throws IOException;
     User registerUser(String login, String email) throws LoginConflictException;
     User updateUsersMail(String login, String newEmail);
 }

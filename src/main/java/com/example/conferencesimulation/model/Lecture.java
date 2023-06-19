@@ -28,6 +28,14 @@ public class Lecture {
     public Lecture() {
     }
 
+    public Lecture(int lectureId, Path path, LocalDateTime startDate, LocalDateTime endDate, List<User> users) {
+        this.lectureId = lectureId;
+        this.path = path;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.users = users;
+    }
+
     public int getLectureId() {
         return lectureId;
     }

@@ -1,4 +1,4 @@
-package com.example.conferencesimulation.mappers;
+package com.example.conferencesimulation.utils.mappers;
 
 import com.example.conferencesimulation.dto.UserDto;
 import com.example.conferencesimulation.model.User;

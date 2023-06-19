@@ -1,9 +1,8 @@
-package com.example.conferencesimulation.mappers;
+package com.example.conferencesimulation.utils.mappers;
 
 import com.example.conferencesimulation.dto.UserDto;
 import com.example.conferencesimulation.model.User;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 @Component
 public class UserMapperImpl implements  UserMapper{

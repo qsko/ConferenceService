@@ -1,1 +1,1 @@
-2023-06-17T14:35:41.288925300,mail,Succesfuly registered for lecture: Lecture{lectureId=22, path=PATH2, startDate=2023-06-01T12:00, endDate=2023-06-01T13:45}
+2023-06-19T12:29:48.236837500,email,Successfully registered for lecture: Lecture{lectureId=11, path=PATH1, startDate=2023-06-01T10:00, endDate=2023-06-01T11:45}
