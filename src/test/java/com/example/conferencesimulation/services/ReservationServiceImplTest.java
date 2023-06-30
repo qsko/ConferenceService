@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -46,83 +45,88 @@ class ReservationServiceImplTest {
     private final LocalDateTime endDate1  = LocalDateTime.of(LocalDate.of(2023, 6, 1), LocalTime.of(11, 45));
     private final LocalDateTime startDate2  = LocalDateTime.of(LocalDate.of(2023, 6, 1), LocalTime.of(14, 0));
     private final LocalDateTime endDate2  = LocalDateTime.of(LocalDate.of(2023, 6, 1), LocalTime.of(15, 45));
-    private final Lecture lecture11 = new Lecture(lectureId11, Path.PATH1, startDate1, endDate1, new ArrayList<User>());
-    private final Lecture lecture12 = new Lecture(lectureId12, Path.PATH2, startDate1, endDate1, new ArrayList<User>());
-    private final Lecture lecture32 = new Lecture(lectureId32, Path.PATH2, startDate2, endDate2, new ArrayList<User>());
-    private final Lecture lecture33 = new Lecture(lectureId33, Path.PATH3, startDate2, endDate2, new ArrayList<User>());
+    private final Lecture lecture11 = new Lecture(lectureId11, Path.PATH1, startDate1, endDate1, new ArrayList<>());
+    private final Lecture lecture12 = new Lecture(lectureId12, Path.PATH2, startDate1, endDate1, new ArrayList<>());
+    private final Lecture lecture32 = new Lecture(lectureId32, Path.PATH2, startDate2, endDate2, new ArrayList<>());
+    private final Lecture lecture33 = new Lecture(lectureId33, Path.PATH3, startDate2, endDate2, new ArrayList<>());
     private final User user1 = new User(1,login, mail, new ArrayList<>());
 
     @Test
     void cancelRegistrationForLecture_Success() {
-
+        //given
         user1.setLectures( new ArrayList<>(List.of(lecture11)));
-
+        //when
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user1));
         when(lectureRepository.findById(lectureId11)).thenReturn(Optional.of(lecture11));
         when(userRepository.save(user1)).thenReturn(user1);
+
+        //then
         User returnedUser = reservationService.cancelRegistrationForLecture(login, lectureId11);
         assertEquals(returnedUser.getLectures().size(), 0);
     }
 
     @Test
-    void signupForLecture_LectureFullyBooked_Fail() throws IOException {
+    void signupForLecture_LectureFullyBooked_Fail() {
+        //given
         ArrayList<User> users = getArrayListWithNUsers(5);
         lecture11.setUsers(users);
+        //when
         when(lectureRepository.findById(lectureId11)).thenReturn(Optional.of(lecture11));
-
-        Exception ex = assertThrows(SignupForLectureException.class,()->{
-            reservationService.signupForLecture(user1.getLogin(), user1.getEmail(), lectureId11);
-        });
+        //then
+        Exception ex = assertThrows(SignupForLectureException.class,()-> reservationService.signupForLecture(user1.getLogin(), user1.getEmail(), lectureId11));
         assertEquals("There's no more place in this lecture", ex.getMessage());
     }
     @Test
     void signupForLecture_UserHasLectureAtTime_Fail() {
-
+        //given
        user1.setLectures(List.of(lecture12));
-
+        //when
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user1));
         when(lectureRepository.findById(lectureId11)).thenReturn(Optional.of(lecture11));
-
-        Exception ex = assertThrows(SignupForLectureException.class,()->{
-            reservationService.signupForLecture(user1.getLogin(), user1.getEmail(), lectureId11);
-        });
+        //then
+        Exception ex = assertThrows(SignupForLectureException.class,()-> reservationService.signupForLecture(user1.getLogin(), user1.getEmail(), lectureId11));
         assertEquals("User is already signed up for lecture at this time", ex.getMessage());
     }
 
     @Test
     void signupForLecture_EmailSent() throws IOException {
+        //given
 
+        //when
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user1));
         when(lectureRepository.findById(lectureId11)).thenReturn(Optional.of(lecture11));
         reservationService.signupForLecture(user1.getLogin(), user1.getEmail(), lectureId11);
-
+        //then
         verify(emailService,times(1)).sendMail(user1.getEmail(), lecture11);
     }
 
     @Test
     void signupForLecture_Success() throws IOException {
+        //given
 
+        //when
         when(userRepository.findUserByLogin(login)).thenReturn(Optional.of(user1));
         when(userRepository.save(user1)).thenReturn(user1);
         when(lectureRepository.findById(lectureId11)).thenReturn(Optional.of(lecture11));
 
         User user =  reservationService.signupForLecture(user1.getLogin(), user1.getEmail(), lectureId11);
-
+        //then
         assertEquals(user.getLectures().get(0), lecture11);
     }
 
     @Test
     void getStatisticsForLectures_Success() {
+        //given
         ArrayList<User> users = getArrayListWithNUsers(2);
         lecture11.setUsers(users);
         users = getArrayListWithNUsers(2);
         lecture12.setUsers(users);
         users = getArrayListWithNUsers(4);
         lecture32.setUsers(users);
-
         List<Lecture> lectures = List.of(lecture11, lecture12, lecture32);
+        //when
         when(lectureRepository.findAll()).thenReturn(lectures);
-
+        //then
         StatisticForLectures statistic = reservationService.getStatisticsForLectures();
         assertEquals(statistic.getStatistics().get(new LectureDto(lecture11)), 0.25d);
         assertEquals(statistic.getStatistics().get(new LectureDto(lecture12)), 0.25d);
@@ -131,27 +135,28 @@ class ReservationServiceImplTest {
 
     @Test
     void getStatisticsForLectures_NoLectures_Fail() {
+        //given
         List<Lecture> lectures = List.of(lecture11, lecture12, lecture32);
+        //when
         when(lectureRepository.findAll()).thenReturn(lectures);
-
-        Exception ex = assertThrows(StatisticsException.class,()->{
-            reservationService.getStatisticsForLectures();
-        });
+        //then
+        Exception ex = assertThrows(StatisticsException.class,()-> reservationService.getStatisticsForLectures());
         assertEquals("No reservation made in system, can't make statistics", ex.getMessage());
     }
 
     @Test
     void getStatisticsForPaths_Success() {
+        //given
         ArrayList<User> users = getArrayListWithNUsers(3);
         lecture11.setUsers(users);
         users = getArrayListWithNUsers(3);
         lecture12.setUsers(users);
         users = getArrayListWithNUsers(4);
         lecture33.setUsers(users);
-
         List<Lecture> lectures = List.of(lecture11, lecture12, lecture33);
+        //when
         when(lectureRepository.findAll()).thenReturn(lectures);
-
+        //then
         StatisticForPaths statistic = reservationService.getStatisticsForPaths();
         assertEquals(statistic.getStatistics().get(Path.PATH1), 0.3d);
         assertEquals(statistic.getStatistics().get(Path.PATH2), 0.3d);
@@ -160,12 +165,12 @@ class ReservationServiceImplTest {
 
     @Test
     void getStatisticsForPaths_NoLectures_Fail() {
+        //given
         List<Lecture> lectures = List.of(lecture11, lecture12, lecture32);
+        //when
         when(lectureRepository.findAll()).thenReturn(lectures);
-
-        Exception ex = assertThrows(StatisticsException.class,()->{
-            reservationService.getStatisticsForPaths();
-        });
+        //then
+        Exception ex = assertThrows(StatisticsException.class,()-> reservationService.getStatisticsForPaths());
         assertEquals("No reservation made in system, can't make statistics", ex.getMessage());
     }
 

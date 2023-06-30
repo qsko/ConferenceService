@@ -3,19 +3,20 @@ import com.example.conferencesimulation.dto.LectureDto;
 import com.example.conferencesimulation.dto.UserDto;
 import com.example.conferencesimulation.exceptions.LoginConflictException;
 import com.example.conferencesimulation.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.example.conferencesimulation.services.UserServiceImpl;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
 
-    @Autowired
-    private UserServiceImpl userService;
+    private final UserServiceImpl userService;
+
+    public UserController(UserServiceImpl userService){
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<UserDto> getAllUsers(){

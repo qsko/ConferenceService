@@ -16,19 +16,21 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = { LoginConflictException.class,
-            SignupForLectureException.class, StatisticsException.class, NoSuchElementException.class})
-    protected ResponseEntity<Object> handleConflict (RuntimeException ex, WebRequest request) {
+    @ExceptionHandler(value = { NoSuchElementException.class})
+    protected ResponseEntity<Object> handleNotFound (RuntimeException ex, WebRequest request) {
         String bodyOfResponse = ex.getMessage();
-        HttpStatus status;
-
-        if(ex instanceof LoginConflictException || ex instanceof SignupForLectureException
-                || ex instanceof StatisticsException)
-            status = HttpStatus.CONFLICT;
-        else
-            status = HttpStatus.NOT_FOUND;
 
         return handleExceptionInternal(ex, bodyOfResponse,
-                new HttpHeaders(), status, request);
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+
+    @ExceptionHandler(value = { LoginConflictException.class,
+            SignupForLectureException.class, StatisticsException.class,})
+    protected ResponseEntity<Object> handleConflict (RuntimeException ex, WebRequest request) {
+        String bodyOfResponse = ex.getMessage();
+        
+        return handleExceptionInternal(ex, bodyOfResponse,
+                new HttpHeaders(), HttpStatus.CONFLICT, request);
     }
 }

@@ -3,7 +3,6 @@ import com.example.conferencesimulation.model.StatisticForLectures;
 import com.example.conferencesimulation.model.StatisticForPaths;
 import com.example.conferencesimulation.model.User;
 import com.example.conferencesimulation.services.ReservationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -12,8 +11,11 @@ import java.io.IOException;
 @RequestMapping(value = "/reservations")
 public class ReservationController {
 
-    @Autowired
-    private ReservationService reservationService;
+    private final ReservationService reservationService;
+
+    public ReservationController(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
 
     @PostMapping(value = "/{login}/{email}/{lectureId}")
     public User signupForLecture(@PathVariable String login, @PathVariable String email, @PathVariable int lectureId) throws IOException {

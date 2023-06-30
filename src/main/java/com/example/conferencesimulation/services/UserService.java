@@ -3,10 +3,8 @@ package com.example.conferencesimulation.services;
 import com.example.conferencesimulation.dto.LectureDto;
 import com.example.conferencesimulation.dto.UserDto;
 import com.example.conferencesimulation.exceptions.LoginConflictException;
-import com.example.conferencesimulation.model.Lecture;
 import com.example.conferencesimulation.model.User;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface UserService {

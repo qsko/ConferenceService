@@ -6,21 +6,26 @@ import com.example.conferencesimulation.exceptions.StatisticsException;
 import com.example.conferencesimulation.model.*;
 import com.example.conferencesimulation.repositories.LectureRepository;
 import com.example.conferencesimulation.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class ReservationServiceImpl implements ReservationService{
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private LectureRepository lectureRepository;
-    @Autowired
-    private EmailService emailService;
+
+    public static final int MAX_USERS = 5;
+    private final UserRepository userRepository;
+    private final LectureRepository lectureRepository;
+    private final EmailService emailService;
+
+    public ReservationServiceImpl(UserRepository userRepository, LectureRepository lectureRepository, EmailService emailService) {
+        this.userRepository = userRepository;
+        this.lectureRepository = lectureRepository;
+        this.emailService = emailService;
+    }
 
     @Override
     public User cancelRegistrationForLecture(String login, int lectureId) {
@@ -36,16 +41,17 @@ public class ReservationServiceImpl implements ReservationService{
 
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         List<User> users = lecture.getUsers();
-        if(users.size() > 4){
+        if(users.size() >= MAX_USERS){
             throw new SignupForLectureException("There's no more place in this lecture");
         }
         User user = userRepository.findUserByLogin(login).orElseThrow();
         List<Lecture> lectures = user.getLectures();
 
-        for(Lecture l: lectures){
+        lectures.forEach(l ->  {
             if(lecture.getStartDate().equals(l.getStartDate()))
                 throw new SignupForLectureException("User is already signed up for lecture at this time");
-        }
+            }
+        );
 
         user.addLecture(lecture);
         emailService.sendMail(user.getEmail(), lecture);
@@ -60,10 +66,12 @@ public class ReservationServiceImpl implements ReservationService{
         int totalNumberOfParticipants = getTotalNumberOfParticipants(lectures);
 
         StatisticForLectures statistic = new StatisticForLectures();
-        for(Lecture lecture: lectures){
-            double percent = (double)lecture.getUsers().size()/totalNumberOfParticipants;
-            statistic.putElements(new LectureDto(lecture), percent);
-        }
+        lectures.forEach(lecture -> {
+           double percent = (double)lecture.getUsers().size()/totalNumberOfParticipants;
+           statistic.putElements(new LectureDto(lecture), percent);
+        });
+
+
         return statistic;
     }
 
@@ -75,7 +83,7 @@ public class ReservationServiceImpl implements ReservationService{
 
         StatisticForPaths statistic = new StatisticForPaths();
 
-        for(Path path: Path.values()){
+        Arrays.stream(Path.values()).forEach(path -> {
             int pathParticipants = lectures.stream()
                     .filter(l -> l.getPath() == path)
                     .map(l -> l.getUsers().size())
@@ -83,7 +91,7 @@ public class ReservationServiceImpl implements ReservationService{
                     .sum();
             double percent = (double) pathParticipants/ totalNumberOfParticipants;
             statistic.putElements(path,percent);
-        }
+        });
 
         return statistic;
     }

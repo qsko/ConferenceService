@@ -1,9 +1,10 @@
 package com.example.conferencesimulation.model;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class StatisticForPaths {
-    private HashMap<Path, Double> statistics = new HashMap<>();
+    private Map<Path, Double> statistics = new HashMap<>();
 
     public void putElements(Path path, double percent){
 
@@ -12,7 +13,7 @@ public class StatisticForPaths {
         statistics.put(path, shortDouble);
     }
 
-    public HashMap<Path, Double> getStatistics() {
+    public Map<Path, Double> getStatistics() {
         return statistics;
     }
 

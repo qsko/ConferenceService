@@ -5,7 +5,6 @@ import com.example.conferencesimulation.exceptions.LoginConflictException;
 import com.example.conferencesimulation.utils.mappers.LectureMapper;
 import com.example.conferencesimulation.utils.mappers.UserMapper;
 import com.example.conferencesimulation.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.example.conferencesimulation.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,23 +14,26 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService{
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
-    private LectureMapper lectureMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final LectureMapper lectureMapper;
+
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, LectureMapper lectureMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.lectureMapper = lectureMapper;
+    }
 
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = (List<User>) userRepository.findAll();
-        return users.stream().map(user -> userMapper.userToUserDto(user)).toList();
+        return users.stream().map(userMapper::userToUserDto).toList();
     }
 
     @Override
     public List<LectureDto> getUserLectures(String login) {
         User user = userRepository.findUserByLogin(login).orElseThrow();
-        return user.getLectures().stream().map(lecture -> lectureMapper.reservationToReservationDto(lecture)).toList();
+        return user.getLectures().stream().map(lectureMapper::reservationToReservationDto).toList();
     }
 
     @Override

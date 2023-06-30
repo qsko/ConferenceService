@@ -12,7 +12,7 @@ ENDPOINTS:
 
 9. GET localhost:8080/conferencePlan -> get conference plan
 
-Lectures are stored in database (can checked them in resources file in data.sql file) with ids={x}{y} where x denotes period, y denotes path 
+Lectures are stored in database (can be checked them in resources file in data.sql file) with ids={x}{y} where x denotes period, y denotes path 
 for example ID=12 means lecture is being held in first period, and its second path
 
 examples:
